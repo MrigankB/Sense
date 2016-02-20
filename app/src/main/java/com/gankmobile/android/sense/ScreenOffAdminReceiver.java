@@ -19,12 +19,12 @@ public class ScreenOffAdminReceiver extends DeviceAdminReceiver {
 
     @Override
     public void onEnabled(Context context, Intent intent) {
-        showToast(context, "Screen off was added as Device Administrator");
+        showToast(context, "Sense was added as Device Administrator");
     }
 
     @Override
     public void onDisabled(Context context, Intent intent) {
-        showToast(context, "Screen off was removed from Device Administrators List");
+        showToast(context, "Sense off was removed from Device Administrators List");
     }
 
 }

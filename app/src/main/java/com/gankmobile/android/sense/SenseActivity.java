@@ -26,7 +26,10 @@ public class SenseActivity extends ActionBarActivity implements SensorEventListe
     private TextView mSensorValue;
     private SensorManager sensorManager;
     private Sensor proxSensor;
-    //private boolean screenOn = true;
+    private Sensor accelerometer;
+
+    private Button disableButton;
+    private boolean disabled = true;
 
     private long startTime;
 
@@ -38,42 +41,38 @@ public class SenseActivity extends ActionBarActivity implements SensorEventListe
         setContentView(R.layout.activity_sense);
 
         mSensorValue = (TextView) findViewById(R.id.sensor_value_text);
-        //mScreenCondition = (TextView) findViewById(R.id.screen_condition_text);
         mSensorValue.setText("Place your hand over the Sensor");
-        //mScreenCondition.setText("Screen is on");
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         proxSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         sensorManager.registerListener(this, proxSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-        //Button mStartServiceButton = (Button)findViewById(R.id.start_service_button);
+        disableButton = (Button) findViewById(R.id.disable_button);
 
-//        if(ProxSenseService.isRunning)
-//        {
-//            mStartServiceButton.setText("Deactivate Sense");
-//        }
-//        else
-//        {
-//            mStartServiceButton.setText("Activate Sense");
-//        }
+        updateButtonText();
 
-
-//        mStartServiceButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                if (!ProxSenseService.isRunning)
-////                {
-////                    startService(new Intent(SenseActivity.this, ProxSenseService.class));
-////                }
-////                else
-////                {
-////                    stopService(new Intent(SenseActivity.this, ProxSenseService.class));
-////                }
-//            }
-//        });
+        disableButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                disabled = !disabled;
+                updateButtonText();
+            }
+        });
     }
 
+    private void updateButtonText()
+    {
+        if(disabled)
+        {
+            disableButton.setText("Activate Wave Lock");
+        }
+        else
+        {
+            disableButton.setText("Disable Wave Lock");
+        }
+    }
     static void turnScreenOff(final Context context)
     {
         DevicePolicyManager policyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -99,29 +98,17 @@ public class SenseActivity extends ActionBarActivity implements SensorEventListe
     {
         mSensorValue.setText(String.valueOf(event.values[0]));
 
-        // Prox Sensor sensed something
-        if(event.values[0] == 0.0)
-        {
-            startTime = SystemClock.elapsedRealtime();
-        }
-        else
-        {
-            long duration = SystemClock.elapsedRealtime() - startTime;
+        if(!disabled) {
+            // Prox Sensor sensed something
+            if (event.values[0] == 0.0) {
+                startTime = SystemClock.elapsedRealtime();
+            } else {
+                long duration = SystemClock.elapsedRealtime() - startTime;
 
-            //if the hand was over the sensor for less than half a second...
-            if (duration < 500)
-            {
-//                if (screenOn)
-//                {
-//                    mScreenCondition.setText("Screen is turned off");
-//                    screenOn = false;
-//                }
-//                else
-//                {
-//                    mScreenCondition.setText("Screen is turned on");
-//                    screenOn = true;
-//                }
-                turnScreenOff(getApplicationContext());
+                //if the hand was over the sensor for less than half a second...
+                if (duration < 500) {
+                    turnScreenOff(getApplicationContext());
+                }
             }
         }
 

@@ -8,25 +8,27 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".SenseActivity"
     android:orientation="vertical">
-
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--android:padding="20dp"-->
-        <!--android:id="@+id/start_service_button" />-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:layout_marginBottom="30dp"
-        android:text="Wave hand over sensor to begin"
-        style="@style/TextAppearance.AppCompat.Large.Month"/>
+        android:text="@string/subtitle"
+        style="@style/TextAppearance.AppCompat.Large.Month"
+        android:id="@+id/textView" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:layout_marginTop="35dp"
         android:id="@+id/sensor_value_text"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/disable_button"
+        android:text="testing..."
+        android:layout_alignBottom="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="112dp" />
 
 </RelativeLayout>
