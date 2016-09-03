@@ -26,12 +26,14 @@ public class SenseActivity extends ActionBarActivity implements SensorEventListe
     private TextView mSensorValue;
     private SensorManager sensorManager;
     private Sensor proxSensor;
-    private Sensor accelerometer;
+    //private Sensor accelerometer;
 
     private Button disableButton;
     private boolean disabled = true;
 
     private long startTime;
+    private long waveTime;
+    private int waves;
 
     static final String LOG_TAG = "ScreenOffActivity";
 
@@ -40,12 +42,15 @@ public class SenseActivity extends ActionBarActivity implements SensorEventListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sense);
 
+        waves = 0;
+        waveTime = 0;
+
         mSensorValue = (TextView) findViewById(R.id.sensor_value_text);
         mSensorValue.setText("Place your hand over the Sensor");
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         proxSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        //accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         sensorManager.registerListener(this, proxSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
@@ -98,16 +103,35 @@ public class SenseActivity extends ActionBarActivity implements SensorEventListe
     {
         mSensorValue.setText(String.valueOf(event.values[0]));
 
-        if(!disabled) {
+        if(!disabled)
+        {
             // Prox Sensor sensed something
-            if (event.values[0] == 0.0) {
+            if (event.values[0] == 0.0)
+            {
                 startTime = SystemClock.elapsedRealtime();
-            } else {
+                if(waves > 0)
+                {
+                    long waveDuration = SystemClock.elapsedRealtime() - waveTime;
+                    if(waveDuration > 500)
+                        waves = 0;
+                }
+            }
+            else
+            {
                 long duration = SystemClock.elapsedRealtime() - startTime;
-
                 //if the hand was over the sensor for less than half a second...
-                if (duration < 500) {
-                    turnScreenOff(getApplicationContext());
+                if (duration < 500)
+                {
+                    waves++;
+                    if(waves >= 2)
+                    {
+                        waves = 0;
+                        turnScreenOff(getApplicationContext());
+                    }
+                    else
+                    {
+                        waveTime = SystemClock.elapsedRealtime();
+                    }
                 }
             }
         }
